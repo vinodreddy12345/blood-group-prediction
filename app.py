@@ -4,6 +4,8 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from PIL import Image
 import os
+import gdown
+import tempfile
 
 # Set page config
 st.set_page_config(
@@ -31,7 +33,16 @@ st.markdown("""
 @st.cache_resource
 def load_prediction_model():
     try:
-        model = load_model("bloodgroup_model.h5")
+        # Create a temporary directory to store the model
+        temp_dir = tempfile.mkdtemp()
+        model_path = os.path.join(temp_dir, "bloodgroup_model.h5")
+        
+        # Download the model from Google Drive
+        url = 'https://drive.google.com/uc?id=1JSqxSP8-1CMF8fSwX5f8XnXI3OOU6WL9'
+        gdown.download(url, model_path, quiet=False)
+        
+        # Load the model
+        model = load_model(model_path)
         return model
     except Exception as e:
         st.error(f"Error loading model: {str(e)}")
@@ -84,7 +95,7 @@ def main():
         return
 
     # Header
-    st.title("Blood Group Prediction from Fingerprint 🩸")
+    st.title("Blood Group Prediction from Fingerprint ")
     st.write("""
     This application predicts blood groups from fingerprint images using deep learning.
     Upload a clear fingerprint image for the best results.
